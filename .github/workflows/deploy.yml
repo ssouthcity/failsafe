@@ -3,7 +3,7 @@ name: Docker Compose Deployment
 on:
   push:
     branches:
-      - feat/minimum-bot
+      - main
 
 jobs:
   deploy:
