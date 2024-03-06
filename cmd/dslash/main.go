@@ -51,6 +51,7 @@ func main() {
 	}
 
 	log.Println("The following commands have been created/updated:")
+
 	for _, cmd := range createdCommands {
 		log.Printf("  - %s\n", cmd.Name)
 	}
