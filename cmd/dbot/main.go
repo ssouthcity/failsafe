@@ -29,6 +29,18 @@ func main() {
 		}
 	})
 
+	session.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "pong",
+			},
+		})
+		if err != nil {
+			slog.Error("interaction respond failed", "err", err)
+		}
+	})
+
 	if err = session.Open(); err != nil {
 		slog.Error("unable to connect to discord ws", "err", err)
 		os.Exit(1)
