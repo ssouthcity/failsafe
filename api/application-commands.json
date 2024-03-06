@@ -1,0 +1,6 @@
+[
+  {
+    "name": "ping",
+    "description": "verify that commands are routed correctly"
+  }
+]
