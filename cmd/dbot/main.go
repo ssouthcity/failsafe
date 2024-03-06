@@ -15,9 +15,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	authscheme := fmt.Sprintf("Bot %s", token)
+	auth_scheme := fmt.Sprintf("Bot %s", token)
 
-	s, err := discordgo.New(authscheme)
+	s, err := discordgo.New(auth_scheme)
 	if err != nil {
 		slog.Error("invalid client configuration", "err", err)
 		os.Exit(1)
