@@ -19,15 +19,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	auth_scheme := fmt.Sprintf("Bot %s", token)
+	authscheme := fmt.Sprintf("Bot %s", token)
 
-	s, err := discordgo.New(auth_scheme)
+	s, err := discordgo.New(authscheme)
 	if err != nil {
 		slog.Error("invalid client configuration", "err", err)
 		os.Exit(1)
 	}
 
-	s.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
+	s.AddHandler(func(s *discordgo.Session, _ *discordgo.Ready) {
 		slog.Info("logged in", "user", s.State.User.Username)
 
 		err := s.UpdateWatchStatus(0, "vex confluxes")
