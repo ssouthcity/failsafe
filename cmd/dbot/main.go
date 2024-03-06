@@ -23,7 +23,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	s.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
+	s.AddHandler(func(s *discordgo.Session, _ *discordgo.Ready) {
 		slog.Info("logged in", "user", s.State.User.Username)
 
 		err := s.UpdateWatchStatus(0, "vex confluxes")
@@ -32,8 +32,7 @@ func main() {
 		}
 	})
 
-	err = s.Open()
-	if err != nil {
+	if err = s.Open(); err != nil {
 		slog.Error("unable to connect to discord ws", "err", err)
 		os.Exit(1)
 	}
