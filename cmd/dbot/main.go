@@ -19,7 +19,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	authscheme := fmt.Sprintf("Bot %s", token)
+	auth_scheme := fmt.Sprintf("Bot %s", token)
 
 	s, err := discordgo.New(authscheme)
 	if err != nil {
