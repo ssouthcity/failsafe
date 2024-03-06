@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,14 +12,12 @@ import (
 func main() {
 	var token = os.Getenv("DISCORD_TOKEN")
 	if token == "" {
-		fmt.Println("Environment variable DISCORD_TOKEN is unset")
-		os.Exit(1)
+		log.Fatal("Environment variable DISCORD_TOKEN is unset")
 	}
 
 	var appID = os.Getenv("DISCORD_APPLICATION_ID")
 	if appID == "" {
-		fmt.Println("Environment variable DISCORD_APPLICATION_ID is unset")
-		os.Exit(1)
+		log.Fatal("Environment variable DISCORD_APPLICATION_ID is unset")
 	}
 
 	var specPath = "application-commands.json"
@@ -28,8 +27,7 @@ func main() {
 
 	f, err := os.Open(specPath)
 	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 	defer f.Close()
 
@@ -40,20 +38,17 @@ func main() {
 
 	err = decoder.Decode(&commands)
 	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	s, err := discordgo.New("Bot " + token)
 	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	createdCommands, err := s.ApplicationCommandBulkOverwrite(appID, "", commands)
 	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	fmt.Printf("The following commands have been created/updated:\n\n")
