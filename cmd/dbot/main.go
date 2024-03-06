@@ -9,11 +9,7 @@ import (
 )
 
 func main() {
-	      token := os.Getenv("DISCORD_TOKEN")
-
-
-
-
+	token := os.Getenv("DISCORD_TOKEN")
 	if token == "" {
 		slog.Error("environment variable DISCORD_TOKEN must be set")
 		os.Exit(1)
@@ -36,8 +32,7 @@ func main() {
 		}
 	})
 
-	err = s.Open()
-	if err != nil {
+	if err = s.Open(); err != nil {
 		slog.Error("unable to connect to discord ws", "err", err)
 		os.Exit(1)
 	}
