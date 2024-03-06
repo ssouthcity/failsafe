@@ -37,7 +37,7 @@ func main() {
 			},
 		})
 		if err != nil {
-			slog.Error("interaction respond", "err", err)
+			slog.Error("interaction respond failed", "err", err)
 		}
 	})
 
