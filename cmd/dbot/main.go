@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 
@@ -15,15 +14,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	authscheme := fmt.Sprintf("Bot %s", token)
-
-	s, err := discordgo.New(authscheme)
+	session, err := discordgo.New("Bot " + token)
 	if err != nil {
 		slog.Error("invalid client configuration", "err", err)
 		os.Exit(1)
 	}
 
-	s.AddHandler(func(s *discordgo.Session, _ *discordgo.Ready) {
+	session.AddHandler(func(s *discordgo.Session, _ *discordgo.Ready) {
 		slog.Info("logged in", "user", s.State.User.Username)
 
 		err := s.UpdateWatchStatus(0, "vex confluxes")
@@ -32,11 +29,11 @@ func main() {
 		}
 	})
 
-	if err = s.Open(); err != nil {
+	if err = session.Open(); err != nil {
 		slog.Error("unable to connect to discord ws", "err", err)
 		os.Exit(1)
 	}
-	defer s.Close()
+	defer session.Close()
 
 	select {}
 }

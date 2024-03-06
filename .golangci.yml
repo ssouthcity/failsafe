@@ -1,5 +1,12 @@
 linters:
   enable-all: true
 
+linters-settings:
+  depguard:
+    rules:
+      main:
+        allow:
+          - github.com/bwmarrin/discordgo
+
 run:
   issues-exit-code: 1
