@@ -9,7 +9,11 @@ import (
 )
 
 func main() {
-	token := os.Getenv("DISCORD_TOKEN")
+	      token := os.Getenv("DISCORD_TOKEN")
+
+
+
+
 	if token == "" {
 		slog.Error("environment variable DISCORD_TOKEN must be set")
 		os.Exit(1)
