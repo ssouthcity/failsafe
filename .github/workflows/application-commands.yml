@@ -1,0 +1,27 @@
+name: Register Discord Application Commands
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  
+  register_commands:
+    name: Register Commands
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Run Register Tool
+        run: go run cmd/dslash/main.go api/application-commands.json
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_APPLICATION_ID: ${{ secrets.DISCORD_APPLICATION_ID }}
+
