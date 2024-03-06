@@ -30,12 +30,15 @@ func main() {
 	})
 
 	session.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: "pong",
 			},
 		})
+		if err != nil {
+			slog.Error("interaction respond", "err", err)
+		}
 	})
 
 	if err = session.Open(); err != nil {
