@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy
         run: |
-          docker compose up -d --remove-orphans
+          docker compose up -d --build --remove-orphans
         env:
           DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
