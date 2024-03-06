@@ -8,6 +8,7 @@ linters:
   disable:
     - depguard
     - exhaustruct
+    - exhaustivestruct
 
 run:
   issues-exit-code: 1
