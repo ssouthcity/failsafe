@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 
@@ -51,8 +50,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("The following commands have been created/updated:\n\n")
+	log.Println("The following commands have been created/updated:")
 	for _, cmd := range createdCommands {
-		fmt.Printf("  - %s\n", cmd.Name)
+		log.Printf("  - %s\n", cmd.Name)
 	}
 }
