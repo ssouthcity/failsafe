@@ -24,15 +24,15 @@ func main() {
 		specPath = os.Args[1]
 	}
 
-	f, err := os.Open(specPath)
+	file, err := os.Open(specPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer f.Close()
+	defer file.Close()
 
 	var commands []*discordgo.ApplicationCommand
 
-	decoder := json.NewDecoder(f)
+	decoder := json.NewDecoder(file)
 	decoder.DisallowUnknownFields()
 
 	err = decoder.Decode(&commands)
@@ -40,12 +40,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	s, err := discordgo.New("Bot " + token)
+	session, err := discordgo.New("Bot " + token)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	createdCommands, err := s.ApplicationCommandBulkOverwrite(appID, "", commands)
+	createdCommands, err := session.ApplicationCommandBulkOverwrite(appID, "", commands)
 	if err != nil {
 		log.Fatal(err)
 	}
