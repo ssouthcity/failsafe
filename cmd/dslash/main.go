@@ -9,17 +9,17 @@ import (
 )
 
 func main() {
-	var token = os.Getenv("DISCORD_TOKEN")
+	token := os.Getenv("DISCORD_TOKEN")
 	if token == "" {
 		log.Fatal("Environment variable DISCORD_TOKEN is unset")
 	}
 
-	var appID = os.Getenv("DISCORD_APPLICATION_ID")
+	appID := os.Getenv("DISCORD_APPLICATION_ID")
 	if appID == "" {
 		log.Fatal("Environment variable DISCORD_APPLICATION_ID is unset")
 	}
 
-	var specPath = "application-commands.json"
+	specPath := "application-commands.json"
 	if len(os.Args) > 1 {
 		specPath = os.Args[1]
 	}
