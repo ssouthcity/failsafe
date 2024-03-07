@@ -2,5 +2,9 @@
   {
     "name": "ping",
     "description": "verify that commands are routed correctly"
+  },
+  {
+    "name": "bounty",
+    "description": "create bounty for a raid or dungeon boss' head"
   }
 ]
