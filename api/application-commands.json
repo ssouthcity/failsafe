@@ -1,10 +1,15 @@
 [
   {
-    "name": "ping",
-    "description": "verify that commands are routed correctly"
-  },
-  {
     "name": "bounty",
-    "description": "create bounty for a raid or dungeon boss' head"
+    "description": "create bounty for a raid or dungeon boss' head",
+    "options": [
+      {
+        "name": "activity",
+        "description": "which activity you'll be doing",
+        "type": 3,
+        "required": true,
+        "autocomplete": true
+      }
+    ]
   }
 ]

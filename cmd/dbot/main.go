@@ -53,24 +53,32 @@ func main() {
 	})
 
 	session.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		if i.Type != discordgo.InteractionApplicationCommand {
-			return
-		}
-
-		data := i.ApplicationCommandData()
-
-		switch data.Name {
-		case "ping":
-			err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
+		switch i.Type {
+		case discordgo.InteractionApplicationCommandAutocomplete:
+			err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionApplicationCommandAutocompleteResult,
 				Data: &discordgo.InteractionResponseData{
-					Content: "pong",
+					Choices: []*discordgo.ApplicationCommandOptionChoice{
+						{
+							Name:  "Vow of the Disciple",
+							Value: "vow",
+						},
+						{
+							Name:  "Root of Nightmares",
+							Value: "ron",
+						},
+					},
 				},
 			})
 			if err != nil {
-				slog.Error("interaction respond failed", "err", err)
+				slog.Error("interaction response failed", "err", err)
+				return
 			}
-		case "bounty":
+		case discordgo.InteractionApplicationCommand:
+			data := i.ApplicationCommandData()
+
+			raid := data.Options[0].Value.(string)
+
 			voicechan, err := s.State.Channel("1175271445174173849")
 			if err != nil {
 				slog.Error("unable to get voice channel", "err", err)
@@ -79,7 +87,12 @@ func main() {
 
 			timestart := time.Now().Add(time.Minute)
 
-			img, err := OpenImage("assets/vow-of-the-disciple.jpg")
+			imgpath := map[string]string{
+				"vow": "assets/vow-of-the-disciple.jpg",
+				"ron": "assets/root-of-nightmares.jpg",
+			}[raid]
+
+			img, err := OpenImage(imgpath)
 			if err != nil {
 				slog.Error("unable to open image", "err", err)
 				return
