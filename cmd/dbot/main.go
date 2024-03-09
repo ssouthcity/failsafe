@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/ssouthcity/failsafe/bungie"
 )
 
 func OpenImage(file string) (string, error) {
@@ -55,19 +56,41 @@ func main() {
 	session.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		switch i.Type {
 		case discordgo.InteractionApplicationCommandAutocomplete:
+			token := os.Getenv("BUNGIE_API_KEY")
+
+			term := i.ApplicationCommandData().Options[0].StringValue()
+
+			if term == "" {
+				err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionApplicationCommandAutocompleteResult,
+					Data: &discordgo.InteractionResponseData{
+						Choices: []*discordgo.ApplicationCommandOptionChoice{},
+					},
+				})
+				if err != nil {
+					slog.Error("interaction response failed", "err", err)
+					return
+				}
+				return
+			}
+
+			result, err := bungie.SearchEntity(bungie.ActivityDefinition, term, bungie.WithAPIKey(token))
+			if err != nil {
+				slog.Error("searching destiny activity failed", "err", err)
+			}
+
+			choices := make([]*discordgo.ApplicationCommandOptionChoice, len(result.Response.Results.Results))
+			for i, s := range result.Response.Results.Results {
+				choices[i] = &discordgo.ApplicationCommandOptionChoice{
+					Name:  s.DisplayProperties.Name,
+					Value: s.DisplayProperties.Name,
+				}
+			}
+
 			err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionApplicationCommandAutocompleteResult,
 				Data: &discordgo.InteractionResponseData{
-					Choices: []*discordgo.ApplicationCommandOptionChoice{
-						{
-							Name:  "Vow of the Disciple",
-							Value: "vow",
-						},
-						{
-							Name:  "Root of Nightmares",
-							Value: "ron",
-						},
-					},
+					Choices: choices,
 				},
 			})
 			if err != nil {
@@ -77,7 +100,7 @@ func main() {
 		case discordgo.InteractionApplicationCommand:
 			data := i.ApplicationCommandData()
 
-			raid := data.Options[0].Value.(string)
+			activity := data.Options[0].StringValue()
 
 			voicechan, err := s.State.Channel("1175271445174173849")
 			if err != nil {
@@ -87,15 +110,23 @@ func main() {
 
 			timestart := time.Now().Add(time.Minute)
 
-			imgpath := map[string]string{
-				"vow": "assets/vow-of-the-disciple.jpg",
-				"ron": "assets/root-of-nightmares.jpg",
-			}[raid]
+			imgpaths := map[string]string{
+				"Vow of the Disciple":         "assets/vow-of-the-disciple.jpg",
+				"Vow of the Disciple: Normal": "assets/vow-of-the-disciple.jpg",
+				"Vow of the Disciple: Master": "assets/vow-of-the-disciple.jpg",
+				"Vow of the Disciple: Legend": "assets/vow-of-the-disciple.jpg",
+				"Root of Nightmares: Normal":  "assets/root-of-nightmares.jpg",
+				"Root of Nightmares: Master":  "assets/root-of-nightmares.jpg",
+			}
 
-			img, err := OpenImage(imgpath)
-			if err != nil {
-				slog.Error("unable to open image", "err", err)
-				return
+			img := ""
+			if path, ok := imgpaths[activity]; ok {
+				var err error
+				img, err = OpenImage(path)
+				if err != nil {
+					slog.Error("unable to open image", "err", err)
+					return
+				}
 			}
 
 			_, err = s.GuildScheduledEventCreate(i.GuildID, &discordgo.GuildScheduledEventParams{
