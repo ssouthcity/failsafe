@@ -53,95 +53,28 @@ func main() {
 		}
 	})
 
-	session.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		switch i.Type {
-		case discordgo.InteractionApplicationCommandAutocomplete:
-			token := os.Getenv("BUNGIE_API_KEY")
+	session.AddHandler(func(s *discordgo.Session, e *discordgo.GuildScheduledEventCreate) {
+		imgpath := "assets/vow-of-the-disciple.jpg"
 
-			term := i.ApplicationCommandData().Options[0].StringValue()
-
-			if term == "" {
-				err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-					Type: discordgo.InteractionApplicationCommandAutocompleteResult,
-					Data: &discordgo.InteractionResponseData{
-						Choices: []*discordgo.ApplicationCommandOptionChoice{},
-					},
-				})
-				if err != nil {
-					slog.Error("interaction response failed", "err", err)
-					return
-				}
-				return
-			}
-
-			result, err := bungie.SearchEntity(bungie.ActivityDefinition, term, bungie.WithAPIKey(token))
-			if err != nil {
-				slog.Error("searching destiny activity failed", "err", err)
-			}
-
-			choices := make([]*discordgo.ApplicationCommandOptionChoice, len(result.Response.Results.Results))
-			for i, s := range result.Response.Results.Results {
-				choices[i] = &discordgo.ApplicationCommandOptionChoice{
-					Name:  s.DisplayProperties.Name,
-					Value: s.DisplayProperties.Name,
-				}
-			}
-
-			err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionApplicationCommandAutocompleteResult,
-				Data: &discordgo.InteractionResponseData{
-					Choices: choices,
-				},
-			})
-			if err != nil {
-				slog.Error("interaction response failed", "err", err)
-				return
-			}
-		case discordgo.InteractionApplicationCommand:
-			data := i.ApplicationCommandData()
-
-			activity := data.Options[0].StringValue()
-
-			voicechan, err := s.State.Channel("1175271445174173849")
-			if err != nil {
-				slog.Error("unable to get voice channel", "err", err)
-				return
-			}
-
-			timestart := time.Now().Add(time.Minute)
-
-			imgpaths := map[string]string{
-				"Vow of the Disciple":         "assets/vow-of-the-disciple.jpg",
-				"Vow of the Disciple: Normal": "assets/vow-of-the-disciple.jpg",
-				"Vow of the Disciple: Master": "assets/vow-of-the-disciple.jpg",
-				"Vow of the Disciple: Legend": "assets/vow-of-the-disciple.jpg",
-				"Root of Nightmares: Normal":  "assets/root-of-nightmares.jpg",
-				"Root of Nightmares: Master":  "assets/root-of-nightmares.jpg",
-			}
-
-			img := ""
-			if path, ok := imgpaths[activity]; ok {
-				var err error
-				img, err = OpenImage(path)
-				if err != nil {
-					slog.Error("unable to open image", "err", err)
-					return
-				}
-			}
-
-			_, err = s.GuildScheduledEventCreate(i.GuildID, &discordgo.GuildScheduledEventParams{
-				Name:               "Test",
-				EntityType:         discordgo.GuildScheduledEventEntityTypeVoice,
-				ChannelID:          voicechan.ID,
-				ScheduledStartTime: &timestart,
-				PrivacyLevel:       discordgo.GuildScheduledEventPrivacyLevelGuildOnly,
-				Image:              img,
-			})
-			if err != nil {
-				slog.Error("interaction respond failed", "err", err)
-			}
+		img, err := OpenImage(imgpath)
+		if err != nil {
+			slog.Error("unable to open activity image", "err", err)
+			return
 		}
+
+		s.GuildScheduledEventEdit(e.GuildID, e.ID, &discordgo.GuildScheduledEventParams{
+			Image: img,
+		})
 	})
+
+	// imgpaths := map[string]string{
+	// 	"Vow of the Disciple":         "assets/vow-of-the-disciple.jpg",
+	// 	"Vow of the Disciple: Normal": "assets/vow-of-the-disciple.jpg",
+	// 	"Vow of the Disciple: Master": "assets/vow-of-the-disciple.jpg",
+	// 	"Vow of the Disciple: Legend": "assets/vow-of-the-disciple.jpg",
+	// 	"Root of Nightmares: Normal":  "assets/root-of-nightmares.jpg",
+	// 	"Root of Nightmares: Master":  "assets/root-of-nightmares.jpg",
+	// }
 
 	if err = session.Open(); err != nil {
 		slog.Error("unable to connect to discord ws", "err", err)
