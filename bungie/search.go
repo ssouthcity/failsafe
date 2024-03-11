@@ -22,7 +22,7 @@ type DestinyDisplayPropertiesDefinition struct {
 }
 
 type DestinyEntitySearchResultItem struct {
-	Hash              uint32                             `json:"hash"`
+	Hash              uint64                             `json:"hash"`
 	EntityType        string                             `json:"entityType"`
 	DisplayProperties DestinyDisplayPropertiesDefinition `json:"displayProperties"`
 	Weight            float64                            `json:"weight"`

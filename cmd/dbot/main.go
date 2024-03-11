@@ -6,7 +6,6 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/ssouthcity/failsafe/bungie"
@@ -54,7 +53,44 @@ func main() {
 	})
 
 	session.AddHandler(func(s *discordgo.Session, e *discordgo.GuildScheduledEventCreate) {
-		imgpath := "assets/vow-of-the-disciple.jpg"
+		bountyBoardChannelID := "1216096479416946791"
+		eventLink := fmt.Sprintf("https://discord.com/events/%s/%s", e.GuildID, e.ID)
+
+		_, err := s.ChannelMessageSend(bountyBoardChannelID, eventLink)
+		if err != nil {
+			slog.Error("unable to post event link", "err", err)
+		}
+
+		if e.Image != "" {
+			return
+		}
+
+		key := os.Getenv("BUNGIE_API_KEY")
+
+		resp, err := bungie.SearchEntity(bungie.ActivityDefinition, e.Name, bungie.WithAPIKey(key))
+		if err != nil {
+			slog.Error("unable to search for activity", "err", err)
+			return
+		}
+
+		if len(resp.Response.Results.Results) == 0 {
+			slog.Info("no activity results found for event", "name", e.Name)
+			return
+		}
+
+		topResult := resp.Response.Results.Results[0]
+
+		hash2Image := map[uint64]string{
+			2906950631: "assets/vow-of-the-disciple.jpg",
+		}
+
+		imgpath, ok := hash2Image[topResult.Hash]
+		if !ok {
+			slog.Info("no images for activity",
+				slog.String("name", topResult.DisplayProperties.Name),
+				slog.Uint64("hash", topResult.Hash))
+			return
+		}
 
 		img, err := OpenImage(imgpath)
 		if err != nil {
