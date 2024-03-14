@@ -41,8 +41,7 @@ func processFile(path string) {
 		log.Fatalf("%s is not an image", path)
 	}
 
-	err := soyifyImage(path)
-	if err != nil {
+	if err := soyifyImage(path); err != nil {
 		log.Fatal(err)
 	}
 
