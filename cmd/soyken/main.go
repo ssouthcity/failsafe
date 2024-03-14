@@ -30,51 +30,57 @@ func main() {
 	}
 
 	if fInfo.IsDir() {
-		entries, err := os.ReadDir(path)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		for _, entry := range entries {
-			if entry.IsDir() {
-				log.Printf("skipping %s, it is a directory\n", entry.Name())
-
-				continue
-			}
-
-			if strings.Contains(entry.Name(), ".soy.") {
-				continue
-			}
-
-			fullpath := filepath.Join(path, entry.Name())
-
-			if !isImage(fullpath) {
-				log.Printf("skipping %s, it is not an image\n", entry.Name())
-
-				continue
-			}
-
-			err := soyifyImage(fullpath)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-
-		log.Printf("soyken'd all images in %s successfully\n", path)
-
-		return
+		processDir(path)
+	} else {
+		processFile(path)
 	}
+}
 
+func processFile(path string) {
 	if !isImage(path) {
 		log.Fatalf("%s is not an image", path)
 	}
 
-	err = soyifyImage(path)
+	err := soyifyImage(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	log.Printf("soyken'd %s successfully", path)
+}
+
+func processDir(path string) {
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			log.Printf("skipping %s, it is a directory\n", entry.Name())
+
+			continue
+		}
+
+		if strings.Contains(entry.Name(), ".soy.") {
+			continue
+		}
+
+		fullpath := filepath.Join(path, entry.Name())
+
+		if !isImage(fullpath) {
+			log.Printf("skipping %s, it is not an image\n", entry.Name())
+
+			continue
+		}
+
+		err := soyifyImage(fullpath)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	log.Printf("soyken'd all images in %s successfully\n", path)
 }
 
 func isImage(filename string) bool {
