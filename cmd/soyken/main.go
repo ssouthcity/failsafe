@@ -115,24 +115,24 @@ func resizeImage(img image.Image, factor float64) image.Image {
 func soyifyImage(path string) error {
 	bgFile, err := os.Open(path)
 	if err != nil {
-		return fmt.Errorf("unable to open background image file: %w", err)
+		return fmt.Errorf("open background image file failed: %w", err)
 	}
 	defer bgFile.Close()
 
 	fgFile, err := embedFS.Open("soyken.png")
 	if err != nil {
-		return fmt.Errorf("unable to open soyken image file: %w", err)
+		return fmt.Errorf("open soyken image file failed: %w", err)
 	}
 	defer fgFile.Close()
 
 	bgImage, _, err := image.Decode(bgFile)
 	if err != nil {
-		return err
+		return fmt.Errorf("decode background image file failed: %w", err)
 	}
 
 	fgImage, _, err := image.Decode(fgFile)
 	if err != nil {
-		return err
+		return fmt.Errorf("decode soyken image file failed: %w", err)
 	}
 
 	bgWidth := bgImage.Bounds().Dx()
@@ -158,13 +158,13 @@ func soyifyImage(path string) error {
 
 	output, err := os.Create(outPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("creating output image file failed: %w", err)
 	}
 	defer output.Close()
 
 	err = jpeg.Encode(output, canvas, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("writing output image file failed: %w", err)
 	}
 
 	return nil
