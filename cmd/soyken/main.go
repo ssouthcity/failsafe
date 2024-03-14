@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"flag"
+	"fmt"
 	"image"
 	"image/draw"
 	"image/jpeg"
@@ -12,6 +13,8 @@ import (
 	"path/filepath"
 	"strings"
 )
+
+const MaxKenHeightPercentage = 0.8
 
 //go:embed soyken.png
 var embedFS embed.FS
@@ -32,20 +35,22 @@ func main() {
 			log.Fatal(err)
 		}
 
-		for _, e := range entries {
-			if e.IsDir() {
-				log.Printf("skipping %s, it is a directory\n", e.Name())
+		for _, entry := range entries {
+			if entry.IsDir() {
+				log.Printf("skipping %s, it is a directory\n", entry.Name())
+
 				continue
 			}
 
-			if strings.Contains(e.Name(), ".soy.") {
+			if strings.Contains(entry.Name(), ".soy.") {
 				continue
 			}
 
-			fullpath := filepath.Join(path, e.Name())
+			fullpath := filepath.Join(path, entry.Name())
 
 			if !isImage(fullpath) {
-				log.Printf("skipping %s, it is not an image\n", e.Name())
+				log.Printf("skipping %s, it is not an image\n", entry.Name())
+
 				continue
 			}
 
@@ -56,6 +61,7 @@ func main() {
 		}
 
 		log.Printf("soyken'd all images in %s successfully\n", path)
+
 		return
 	}
 
@@ -73,6 +79,7 @@ func main() {
 
 func isImage(filename string) bool {
 	ext := strings.ToLower(filepath.Ext(filename))
+
 	return ext == ".jpg" || ext == ".jpeg" || ext == ".png"
 }
 
@@ -108,13 +115,13 @@ func resizeImage(img image.Image, factor float64) image.Image {
 func soyifyImage(path string) error {
 	bgFile, err := os.Open(path)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to open background image file: %w", err)
 	}
 	defer bgFile.Close()
 
 	fgFile, err := embedFS.Open("soyken.png")
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to open soyken image file: %w", err)
 	}
 	defer fgFile.Close()
 
@@ -130,7 +137,7 @@ func soyifyImage(path string) error {
 
 	bgWidth := bgImage.Bounds().Dx()
 	bgHeight := bgImage.Bounds().Dy()
-	maxHeight := int(0.8 * float64(bgHeight))
+	maxHeight := int(MaxKenHeightPercentage * float64(bgHeight))
 	scaleFactor := 1.0
 	if fgImage.Bounds().Dy() > maxHeight {
 		scaleFactor = float64(maxHeight) / float64(fgImage.Bounds().Dy())
