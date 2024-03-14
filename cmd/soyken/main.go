@@ -137,8 +137,11 @@ func soyifyImage(path string) error {
 
 	bgWidth := bgImage.Bounds().Dx()
 	bgHeight := bgImage.Bounds().Dy()
+
 	maxHeight := int(MaxKenHeightPercentage * float64(bgHeight))
+
 	scaleFactor := 1.0
+
 	if fgImage.Bounds().Dy() > maxHeight {
 		scaleFactor = float64(maxHeight) / float64(fgImage.Bounds().Dy())
 	}
