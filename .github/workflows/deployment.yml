@@ -1,4 +1,4 @@
-name: Register Discord Application Commands
+name: Deployment
 
 on:
   push:
@@ -6,7 +6,6 @@ on:
       - main
 
 jobs:
-  
   register_commands:
     name: Register Commands
     runs-on: ubuntu-latest
@@ -25,3 +24,22 @@ jobs:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           DISCORD_APPLICATION_ID: ${{ secrets.DISCORD_APPLICATION_ID }}
 
+  deploy_discord_bot:
+    name: Deploy Discord Bot 
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Deploy
+        run: |
+          docker compose up -d --build --remove-orphans
+        env:
+          DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
