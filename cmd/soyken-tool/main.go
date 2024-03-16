@@ -145,11 +145,7 @@ func soyifyImage(path string) error {
 
 	maxHeight := int(MaxKenHeightPercentage * float64(bgHeight))
 
-	scaleFactor := 1.0
-
-	if fgImage.Bounds().Dy() > maxHeight {
-		scaleFactor = float64(maxHeight) / float64(fgImage.Bounds().Dy())
-	}
+	scaleFactor := float64(maxHeight) / float64(fgImage.Bounds().Dy())
 
 	fgResized := resizeImage(fgImage, scaleFactor)
 

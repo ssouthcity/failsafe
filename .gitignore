@@ -22,3 +22,6 @@ go.work
 
 # Env files and secrets
 .env
+
+# Soyken generated images
+**/*.soy.*
