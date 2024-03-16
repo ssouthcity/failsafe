@@ -64,8 +64,8 @@ func respondToInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) 
 	}
 }
 
-func addImageToEvent(s *discordgo.Session, e *discordgo.GuildScheduledEventCreate) {
-	tokens := tokenize(e.Name)
+func addImageToEvent(session *discordgo.Session, event *discordgo.GuildScheduledEventCreate) {
+	tokens := tokenize(event.Name)
 
 	for _, token := range tokens {
 		imgPath := fmt.Sprintf("assets/events/%s.soy.jpg", token)
@@ -77,9 +77,9 @@ func addImageToEvent(s *discordgo.Session, e *discordgo.GuildScheduledEventCreat
 
 		encodedPart := base64.StdEncoding.EncodeToString(content)
 
-		dataURL := fmt.Sprintf("data:image/jpeg;base64,%s", encodedPart)
+		dataURL := "data:image/jpeg;base64," + encodedPart
 
-		_, err = s.GuildScheduledEventEdit(e.GuildID, e.ID, &discordgo.GuildScheduledEventParams{
+		_, err = session.GuildScheduledEventEdit(event.GuildID, event.ID, &discordgo.GuildScheduledEventParams{
 			Image: dataURL,
 		})
 		if err != nil {
@@ -88,15 +88,15 @@ func addImageToEvent(s *discordgo.Session, e *discordgo.GuildScheduledEventCreat
 			return
 		}
 
-		slog.Info("added image to event successfully", "event", e.Name, "image", imgPath)
+		slog.Info("added image to event successfully", "event", event.Name, "image", imgPath)
 
 		return
 	}
 
-	slog.Error("did not find any image for event", "event", e.Name)
+	slog.Error("did not find any image for event", "event", event.Name)
 }
 
-var specialCharRegex = regexp.MustCompile("[^a-zA-Z0-9\\s]+")
+var specialCharRegex = regexp.MustCompile(`[^a-zA-Z0-9\s]+`)
 
 func tokenize(message string) []string {
 	lower := strings.ToLower(message)
