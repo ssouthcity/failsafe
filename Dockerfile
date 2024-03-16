@@ -8,6 +8,6 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o failsafe cmd/dbot/main.go
+RUN go build -o failsafe cmd/discord-bot/main.go
 
 ENTRYPOINT [ "./failsafe" ]
