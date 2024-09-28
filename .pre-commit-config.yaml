@@ -8,3 +8,7 @@ repos:
       - id: check-added-large-files
       - id: no-commit-to-branch
         args: [--branch, main]
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.61.0
+    hooks:
+      - id: golangci-lint
