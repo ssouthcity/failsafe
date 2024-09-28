@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   changelog:
@@ -34,10 +35,10 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-          git checkout -b chore/update-changelog-${{ github.ref_name }}
+          git checkout -b chore/update-changelog
           git add CHANGELOG.md
           git commit -m "chore: update changelog"
-          git push
+          git push -u
 
       - name: Create PR
         run: |
