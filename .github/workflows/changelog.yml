@@ -44,6 +44,7 @@ jobs:
         run: |
           gh pr create \
             --title "chore: update readme" \
+            --body "" \
             --label docs,automated
 
           gh pr merge --auto
