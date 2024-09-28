@@ -17,6 +17,7 @@
             pkgs.go
             pkgs.pre-commit
             pkgs.golangci-lint
+            pkgs.git-cliff
           ];
         };
       }
