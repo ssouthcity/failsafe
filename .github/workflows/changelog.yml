@@ -38,7 +38,7 @@ jobs:
           git checkout -b chore/update-changelog
           git add CHANGELOG.md
           git commit -m "chore: update changelog"
-          git push -u
+          git push -u origin chore/update-changelog
 
       - name: Create PR
         run: |
