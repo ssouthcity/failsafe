@@ -16,6 +16,7 @@
           packages = [
             pkgs.go
             pkgs.pre-commit
+            pkgs.golangci-lint
           ];
         };
       }
