@@ -47,6 +47,6 @@ jobs:
             --body "" \
             --label documentation,automated
 
-          gh pr merge --auto
+          gh pr merge --squash --auto
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
