@@ -45,7 +45,7 @@ jobs:
           gh pr create \
             --title "chore: update readme" \
             --body "" \
-            --label docs,automated
+            --label documentation,automated
 
           gh pr merge --auto
         env:
