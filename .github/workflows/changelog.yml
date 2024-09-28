@@ -27,12 +27,24 @@ jobs:
           OUTPUT: CHANGELOG.md
           GITHUB_REPO: ${{ github.repository }}
 
-      - name: Commit
+      - name: Commit & Push
         run: |
-          git checkout main
+          set +e
+
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          set +e
+
+          git checkout -b chore/update-changelog-${{ github.ref_name }}
           git add CHANGELOG.md
-          git commit -m "Update changelog"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git main
+          git commit -m "chore: update changelog"
+          git push
+
+      - name: Create PR
+        run: |
+          gh pr create \
+            --title "chore: update readme" \
+            --label docs,automated
+
+          gh pr merge --auto
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
