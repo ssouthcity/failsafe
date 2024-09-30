@@ -13,8 +13,10 @@ on:
 
 permissions:
   pull-requests: read
+  contents: write
 
 jobs:
+
   title:
     name: Validate PR title
     runs-on: ubuntu-latest
@@ -22,3 +24,43 @@ jobs:
       - uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Create Dummy Commit
+        run: |
+          git checkout main
+          touch tmp
+          git add tmp
+          git commit -m "${{ github.event.pull_request.title }}"
+
+      - name: Generate changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_REPO: ${{ github.repository }}
+
+      - name: Remove Dummy Commit
+        run: |
+          git reset --hard HEAD~1
+
+      - name: Commit Changelog
+        run: |
+          git add CHANGELOG.md
+          git commit -m "chore: update changelog"
+          git push -u origin ${{ github.event.pull_request.head.ref }}
