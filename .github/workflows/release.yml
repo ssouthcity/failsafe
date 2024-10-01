@@ -29,7 +29,7 @@ jobs:
           GITHUB_REPO: ${{ github.repository }}
 
       - name: Upload Changelog
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: changelog
           path: CHANGELOG.md
@@ -40,7 +40,7 @@ jobs:
     needs: changelog
     steps:
       - name: Download Changelog
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: changelog
 
