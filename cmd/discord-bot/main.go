@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	slog.Info("Hello World ci lint!")
+	slog.Info("Discord bot is running")
 }
