@@ -1,0 +1,61 @@
+name: Generate Changelog
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+    branches:
+      - main
+
+permissions:
+  content: write
+
+jobs:
+
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Create Dummy Commit
+        run: |
+          git checkout main
+          touch tmp
+          git add tmp
+          git commit -m $PR_TITLE
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+
+      - name: Generate changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_REPO: ${{ github.repository }}
+
+      - name: Remove Dummy Commit
+        run: |
+          git reset --hard HEAD~1
+
+      - name: Commit Changelog
+        run: |
+          git checkout $PR_BRANCH
+          git add CHANGELOG.md
+          git commit -m "chore: update changelog"
+          git push -u origin $PR_BRANCH
+        env:
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
