@@ -34,7 +34,7 @@ jobs:
           git checkout main
           touch tmp
           git add tmp
-          git commit -m $PR_TITLE
+          git commit -m "$PR_TITLE"
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
 
@@ -53,9 +53,9 @@ jobs:
 
       - name: Commit Changelog
         run: |
-          git checkout $PR_BRANCH
+          git checkout "$PR_BRANCH"
           git add CHANGELOG.md
           git commit -m "chore: update changelog"
-          git push -u origin $PR_BRANCH
+          git push -u origin "$PR_BRANCH"
         env:
           PR_BRANCH: ${{ github.event.pull_request.head.ref }}
