@@ -4,5 +4,5 @@ metadata:
   name: failsafe-discord-bot
 spec:
   image: ssouthcity/failsafe-discord-bot
-  interval: 1h
+  interval: 5m0s
   provider: generic
