@@ -13,3 +13,11 @@ linters:
     - style
     - test
     - unused
+
+linters-settings:
+  depguard:
+    rules:
+      main:
+        allow:
+          - $gostd
+          - github.com/bwmarrin/discordgo
