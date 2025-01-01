@@ -6,10 +6,10 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -v -o /app/discord-bot cmd/discord-bot/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o /app/failsafe-discord-bot cmd/discord-bot/main.go
 
-FROM scratch
+FROM alpine
 
-COPY --from=build /app/discord-bot /usr/bin/
+COPY --from=build /app/failsafe-discord-bot /usr/bin/
 
-CMD [ "discord-bot" ]
+CMD [ "/usr/bin/failsafe-discord-bot" ]
